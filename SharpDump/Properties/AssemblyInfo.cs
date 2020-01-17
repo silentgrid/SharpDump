@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SharpDump")]
+[assembly: AssemblyTitle("SharpyDumpy")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SharpDump")]
+[assembly: AssemblyProduct("SharpyDumpy")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("79c9bba3-a0ea-431c-866c-77004802d8a0")]
+[assembly: Guid("89c9bba3-a0ea-431c-966c-87004802d8a0")]
 
 // Version information for an assembly consists of the following four values:
 //
